@@ -1,0 +1,3 @@
+trytosurvive.servegame.com {
+    reverse_proxy localhost:8080
+}

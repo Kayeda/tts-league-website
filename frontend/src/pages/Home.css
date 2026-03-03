@@ -1,0 +1,341 @@
+/* ==================================
+   HERO SECTION
+   ================================== */
+.home {
+    padding-bottom: var(--space-3xl);
+}
+
+.hero {
+    position: relative;
+    padding: var(--space-3xl) 0;
+    overflow: hidden;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(232, 113, 58, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(244, 165, 116, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 80%, rgba(232, 113, 58, 0.05) 0%, transparent 50%);
+    animation: heroPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes heroPulse {
+    0% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.hero-content {
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-logo {
+    width: 180px;
+    height: auto;
+    margin-bottom: var(--space-xl);
+    filter: drop-shadow(0 0 40px rgba(232, 113, 58, 0.3));
+    animation: fadeInUp 0.6s ease;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: var(--color-accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-sm);
+    animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+    animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.hero-stats {
+    display: flex;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-xl);
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-accent);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--space-md);
+    animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+/* ==================================
+   SECTIONS
+   ================================== */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    color: var(--color-text-primary);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.section-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.next-race-section,
+.quick-links-section,
+.last-result-section {
+    margin-top: var(--space-2xl);
+}
+
+/* ==================================
+   NEXT RACE CARD
+   ================================== */
+.next-race-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+.next-race-track {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.next-race-config {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-top: var(--space-xs);
+}
+
+.next-race-details {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.next-race-date {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Countdown */
+.countdown {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.countdown-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: var(--space-xs);
+}
+
+.countdown-separator {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+/* ==================================
+   QUICK LINKS
+   ================================== */
+.quick-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-sm);
+    padding: var(--space-xl);
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+.quick-link-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.quick-link h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.quick-link p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+/* ==================================
+   LAST RESULT / PODIUM
+   ================================== */
+.last-result-track {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.podium {
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.podium-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex: 1;
+    min-width: 200px;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-tertiary);
+}
+
+.podium-1 {
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.podium-2 {
+    border: 1px solid rgba(192, 192, 192, 0.3);
+}
+
+.podium-3 {
+    border: 1px solid rgba(205, 127, 50, 0.3);
+}
+
+.podium-position {
+    font-size: 1.5rem;
+}
+
+.podium-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.podium-time {
+    margin-left: auto;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    font-family: monospace;
+}
+
+/* ==================================
+   RESPONSIVE
+   ================================== */
+@media (max-width: 768px) {
+    .hero {
+        min-height: 60vh;
+        padding: var(--space-2xl) 0;
+    }
+
+    .hero-logo {
+        width: 120px;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-stats {
+        gap: var(--space-lg);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 var(--space-lg);
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+    }
+
+    .next-race-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .next-race-details {
+        justify-content: center;
+    }
+
+    .countdown-value {
+        font-size: 1.5rem;
+    }
+
+    .countdown-item {
+        min-width: 45px;
+    }
+}
