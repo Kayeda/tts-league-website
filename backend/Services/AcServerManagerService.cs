@@ -218,6 +218,27 @@ public class AcServerManagerService
                 }
             }
 
+            // Parse weather graphics
+            var weatherGraphics = new List<string>();
+            if (raceSetup.TryGetProperty("Weather", out var weatherObj) && weatherObj.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var weather in weatherObj.EnumerateObject())
+                {
+                    if (weather.Name.StartsWith("WEATHER_"))
+                    {
+                        var wValue = weather.Value;
+                        if (wValue.TryGetProperty("Graphics", out var graphics))
+                        {
+                            var gStr = graphics.GetString();
+                            if (!string.IsNullOrEmpty(gStr))
+                            {
+                                weatherGraphics.Add(gStr);
+                            }
+                        }
+                    }
+                }
+            }
+
             // Format track name nicely
             var trackName = FormatTrackName(track);
             var trackConfig = FormatTrackName(trackLayout);
@@ -230,7 +251,8 @@ public class AcServerManagerService
                 ScheduledDate = scheduledDate,
                 Laps = raceLaps,
                 IsCompleted = isCompleted,
-                Sessions = sessions
+                Sessions = sessions,
+                WeatherGraphics = weatherGraphics
             };
         }
         catch (Exception ex)

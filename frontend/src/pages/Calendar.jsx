@@ -35,6 +35,18 @@ export default function Calendar() {
         return `${hours}h`;
     }
 
+    function getWeatherIcon(graphicsStr) {
+        if (!graphicsStr) return null;
+        const str = graphicsStr.toLowerCase();
+        if (str.includes("clear") || str.includes("few") || str.includes("scattered") || str.includes("sol_01") || str.includes("sol_02")) return "☀️";
+        if (str.includes("cloud") || str.includes("broken") || str.includes("overcast") || str.includes("sol_03") || str.includes("sol_04")) return "☁️";
+        if (str.includes("rain") || str.includes("drizzle") || str.includes("shower") || str.includes("storm") || str.includes("rain_")) return "🌧️";
+        if (str.includes("thunder") || str.includes("lightning") || str.includes("heavy_storm")) return "⛈️";
+        if (str.includes("fog") || str.includes("mist") || str.includes("sol_01_fog")) return "🌫️";
+        if (str.includes("snow") || str.includes("sleet")) return "❄️";
+        return "⛅"; // default if unknown
+    }
+
     return (
         <div className="page">
             <div className="container">
@@ -91,6 +103,15 @@ export default function Calendar() {
                                                 <span>
                                                     {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
+                                            )}
+                                            {race.weatherGraphics && race.weatherGraphics.length > 0 && (
+                                                <div className="calendar-weather">
+                                                    {race.weatherGraphics.map((graphics, wIndex) => (
+                                                        <span key={wIndex} title={graphics.replace('sol_', '').replace(/_/g, ' ')}>
+                                                            {getWeatherIcon(graphics)}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             )}
                                         </div>
                                     </div>

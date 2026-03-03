@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useServer } from '../ServerContext';
 import './Navbar.css';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { serverKey, setServerKey, server } = useServer();
 
     const links = [
         { path: '/', label: 'Home' },
@@ -44,7 +46,15 @@ export default function Navbar() {
 
                     <div className="navbar-actions">
                         <a
-                            href="http://trytosurvive.servegame.com:8772/live-timing?server=0"
+                            href="https://docs.google.com/document/d/1eRzMsqK9Af8xDdTApNsqiU6fYoVkmu4ao-a0A8mzY0o/edit?usp=drive_link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline btn-sm"
+                        >
+                            📖 TTS Manual
+                        </a>
+                        <a
+                            href={server.liveTiming}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-outline btn-sm"
@@ -52,13 +62,24 @@ export default function Navbar() {
                             🔴 Live Timing
                         </a>
                         <a
-                            href="https://acstuff.ru/s/q:race/online/join?httpPort=8081&ip=trytosurvive.servegame.com"
+                            href={server.joinServer}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-outline btn-sm"
                         >
                             🎮 Join Server
                         </a>
+                        <div className="server-selector">
+                            <select
+                                id="server-select"
+                                value={serverKey}
+                                onChange={(e) => setServerKey(e.target.value)}
+                                className="server-select"
+                            >
+                                <option value="main">🖥️ Main Server</option>
+                                <option value="alt">🖥️ Alt Server</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

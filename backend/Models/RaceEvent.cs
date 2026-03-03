@@ -9,6 +9,7 @@ public class RaceEvent
     public int Laps { get; set; }
     public bool IsCompleted { get; set; }
     public List<SessionInfo> Sessions { get; set; } = new();
+    public List<string> WeatherGraphics { get; set; } = new();
 }
 
 public class SessionInfo

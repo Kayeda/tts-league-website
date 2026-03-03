@@ -1,0 +1,97 @@
+.subscribe-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subscribe-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.subscribe-card {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-2xl);
+}
+
+.subscribe-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.form-group input {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    color: var(--color-text-primary);
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    transition: all var(--transition-base);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px var(--color-accent-glow);
+    background: var(--color-bg-secondary);
+}
+
+.form-group input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    margin-top: 0.25rem;
+}
+
+.submit-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+.status-message {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: center;
+    animation: fadeIn var(--transition-base);
+}
+
+.status-message.error {
+    background: rgba(248, 113, 113, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.status-message.success {
+    background: rgba(74, 222, 128, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.status-message.loading {
+    background: rgba(232, 113, 58, 0.1);
+    color: var(--color-accent-light);
+    border: 1px solid rgba(232, 113, 58, 0.2);
+}

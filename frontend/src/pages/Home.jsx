@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useServer } from '../ServerContext';
 import { getChampionshipInfo, getUpcomingRaces, getLastRaceResult } from '../services/api';
 import './Home.css';
 
 export default function Home() {
+    const { server } = useServer();
     const [championship, setChampionship] = useState(null);
     const [nextRace, setNextRace] = useState(null);
     const [lastResult, setLastResult] = useState(null);
@@ -93,16 +95,27 @@ export default function Home() {
 
                     {/* Action Buttons */}
                     <div className="hero-actions">
+                        <Link to="/subscribe" className="btn btn-primary btn-lg">
+                            📝 Subscribe Now
+                        </Link>
                         <a
-                            href="http://trytosurvive.servegame.com:8772/live-timing?server=0"
+                            href="https://docs.google.com/document/d/1eRzMsqK9Af8xDdTApNsqiU6fYoVkmu4ao-a0A8mzY0o/edit?usp=drive_link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-primary btn-lg"
+                            className="btn btn-outline btn-lg"
+                        >
+                            📖 TTS Manual
+                        </a>
+                        <a
+                            href={server.liveTiming}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline btn-lg"
                         >
                             🔴 Live Timing
                         </a>
                         <a
-                            href="https://acstuff.ru/s/q:race/online/join?httpPort=8081&ip=trytosurvive.servegame.com"
+                            href={server.joinServer}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-outline btn-lg"

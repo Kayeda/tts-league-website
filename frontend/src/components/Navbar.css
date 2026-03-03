@@ -77,6 +77,45 @@
 .navbar-actions {
     display: flex;
     gap: var(--space-sm);
+    align-items: center;
+}
+
+.server-selector {
+    position: relative;
+}
+
+.server-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238a8a9a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+}
+
+.server-select:hover {
+    border-color: var(--color-border-accent);
+}
+
+.server-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px var(--color-accent-glow);
+}
+
+.server-select option {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    padding: 0.5rem;
 }
 
 .btn-sm {
