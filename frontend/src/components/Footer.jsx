@@ -1,6 +1,9 @@
+import { useServer } from '../ServerContext';
 import './Footer.css';
 
 export default function Footer() {
+    const { server } = useServer();
+
     return (
         <footer className="footer">
             <div className="container footer-inner">
@@ -10,14 +13,14 @@ export default function Footer() {
                 </div>
                 <div className="footer-links">
                     <a
-                        href="http://trytosurvive.servegame.com:8772/live-timing?server=0"
+                        href={server.liveTiming}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         Live Timing
                     </a>
                     <a
-                        href="https://acstuff.ru/s/q:race/online/join?httpPort=8081&ip=trytosurvive.servegame.com"
+                        href={server.joinServer}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
