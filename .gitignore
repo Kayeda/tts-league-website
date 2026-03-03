@@ -24,6 +24,11 @@ Thumbs.db
 # Caddy binary
 caddy.exe
 
+# Deployment
+.pids
+backend/publish/
+*.log
+
 # Environment
 .env
 .env.local
