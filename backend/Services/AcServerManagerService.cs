@@ -11,16 +11,18 @@ public class AcServerManagerService
     private readonly IMemoryCache _cache;
     private readonly ILogger<AcServerManagerService> _logger;
 
-    private const string BaseUrl = "http://trytosurvive.servegame.com:8772";
-    private const string ChampionshipId = "a680ac2c-5c26-475b-8319-25396357c5ef";
+    private readonly string _baseUrl;
+    private readonly string _championshipId;
     private const string ExportCacheKey = "championship_export";
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
 
-    public AcServerManagerService(HttpClient httpClient, IMemoryCache cache, ILogger<AcServerManagerService> logger)
+    public AcServerManagerService(HttpClient httpClient, IMemoryCache cache, ILogger<AcServerManagerService> logger, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _cache = cache;
         _logger = logger;
+        _baseUrl = configuration["AcServerManager:BaseUrl"] ?? "http://trytosurvive.servegame.com:8772";
+        _championshipId = configuration["AcServerManager:ChampionshipId"] ?? "a680ac2c-5c26-475b-8319-25396357c5ef";
     }
 
     private async Task<JsonDocument?> GetExportDataAsync()
@@ -30,7 +32,7 @@ public class AcServerManagerService
 
         try
         {
-            var url = $"{BaseUrl}/championship/{ChampionshipId}/export";
+            var url = $"{_baseUrl}/championship/{_championshipId}/export";
             var response = await _httpClient.GetStringAsync(url);
             var doc = JsonDocument.Parse(response);
             _cache.Set(ExportCacheKey, doc, CacheDuration);

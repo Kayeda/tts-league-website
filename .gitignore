@@ -27,6 +27,7 @@ caddy.exe
 # Deployment
 .pids
 backend/publish/
+deploy/
 *.log
 
 # Environment
