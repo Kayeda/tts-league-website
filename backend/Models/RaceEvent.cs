@@ -18,4 +18,5 @@ public class SessionInfo
     public int DurationMinutes { get; set; }
     public int Laps { get; set; }
     public DateTime? ScheduledDate { get; set; }
+    public List<string> WeatherGraphics { get; set; } = new();
 }

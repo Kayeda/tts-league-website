@@ -218,24 +218,86 @@ public class AcServerManagerService
                 }
             }
 
-            // Parse weather graphics
+            // Parse weather graphics and map to sessions using each weather entry's Sessions array
             var weatherGraphics = new List<string>();
+            // Build a map of session key -> list of weather graphics
+            var sessionWeatherMap = new Dictionary<string, List<string>>();
             if (raceSetup.TryGetProperty("Weather", out var weatherObj) && weatherObj.ValueKind == JsonValueKind.Object)
             {
                 foreach (var weather in weatherObj.EnumerateObject())
                 {
-                    if (weather.Name.StartsWith("WEATHER_"))
+                    if (!weather.Name.StartsWith("WEATHER_")) continue;
+
+                    var wValue = weather.Value;
+                    var gStr = "";
+                    if (wValue.TryGetProperty("Graphics", out var graphics))
+                        gStr = graphics.GetString() ?? "";
+
+                    if (string.IsNullOrEmpty(gStr)) continue;
+                    weatherGraphics.Add(gStr);
+
+                    // Each weather entry has a "Sessions" array listing which sessions it belongs to
+                    if (wValue.TryGetProperty("Sessions", out var weatherSessions) && weatherSessions.ValueKind == JsonValueKind.Array)
                     {
-                        var wValue = weather.Value;
-                        if (wValue.TryGetProperty("Graphics", out var graphics))
+                        foreach (var ws in weatherSessions.EnumerateArray())
                         {
-                            var gStr = graphics.GetString();
-                            if (!string.IsNullOrEmpty(gStr))
-                            {
-                                weatherGraphics.Add(gStr);
-                            }
+                            var sessionKey = ws.GetString() ?? "";
+                            if (string.IsNullOrEmpty(sessionKey)) continue;
+
+                            if (!sessionWeatherMap.ContainsKey(sessionKey))
+                                sessionWeatherMap[sessionKey] = new List<string>();
+                            sessionWeatherMap[sessionKey].Add(gStr);
                         }
                     }
+                }
+            }
+
+            // Assign weather graphics to matching sessions
+            foreach (var session in sessions)
+            {
+                // Find the raw session key for this session
+                var rawKey = session.Type switch
+                {
+                    "Practice" => "PRACTICE",
+                    "Qualifying" => "QUALIFY",
+                    "Race" => "RACE",
+                    "Championship Practice" => "CHAMPIONSHIP-PRACTICE",
+                    _ => session.Type
+                };
+
+                if (sessionWeatherMap.TryGetValue(rawKey, out var weatherList))
+                    session.WeatherGraphics = weatherList;
+            }
+
+            // Add sessions for weather-only session types not in RaceSetup.Sessions
+            // (e.g., CHAMPIONSHIP-PRACTICE might not be listed as a session but has weather)
+            var existingRawKeys = sessions.Select(s => s.Type switch
+            {
+                "Practice" => "PRACTICE",
+                "Qualifying" => "QUALIFY",
+                "Race" => "RACE",
+                "Championship Practice" => "CHAMPIONSHIP-PRACTICE",
+                _ => s.Type
+            }).ToHashSet();
+
+            foreach (var kvp in sessionWeatherMap)
+            {
+                if (!existingRawKeys.Contains(kvp.Key))
+                {
+                    var sessionType = kvp.Key switch
+                    {
+                        "PRACTICE" => "Practice",
+                        "QUALIFY" => "Qualifying",
+                        "RACE" => "Race",
+                        "CHAMPIONSHIP-PRACTICE" => "Championship Practice",
+                        _ => kvp.Key
+                    };
+
+                    sessions.Add(new SessionInfo
+                    {
+                        Type = sessionType,
+                        WeatherGraphics = kvp.Value
+                    });
                 }
             }
 

@@ -104,12 +104,19 @@ export default function Calendar() {
                                                     {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             )}
-                                            {race.weatherGraphics && race.weatherGraphics.length > 0 && (
+                                            {race.sessions && race.sessions.some(s => s.weatherGraphics && s.weatherGraphics.length > 0) && (
                                                 <div className="calendar-weather">
-                                                    {race.weatherGraphics.map((graphics, wIndex) => (
-                                                        <span key={wIndex} title={graphics.replace('sol_', '').replace(/_/g, ' ')}>
-                                                            {getWeatherIcon(graphics)}
-                                                        </span>
+                                                    {race.sessions.filter(s => s.weatherGraphics && s.weatherGraphics.length > 0).map((session, sIndex) => (
+                                                        <div key={sIndex} className="calendar-weather-session">
+                                                            <span className="calendar-weather-label">{session.type}</span>
+                                                            <div className="calendar-weather-icons">
+                                                                {session.weatherGraphics.map((graphics, wIndex) => (
+                                                                    <span key={wIndex} title={graphics.replace('sol_', '').replace(/_/g, ' ')}>
+                                                                        {getWeatherIcon(graphics)}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}
