@@ -122,6 +122,9 @@ export default function Home() {
                         >
                             🎮 Join Server
                         </a>
+                        <Link to="/setup-compare" className="btn btn-outline btn-lg">
+                            ⚙️ Compare Setup
+                        </Link>
                     </div>
                 </div>
             </section>

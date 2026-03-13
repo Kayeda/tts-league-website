@@ -7,6 +7,7 @@ import Drivers from './pages/Drivers';
 import Calendar from './pages/Calendar';
 import Results from './pages/Results';
 import Subscribe from './pages/Subscribe';
+import SetupCompare from './pages/SetupCompare';
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/calendar" element={<Calendar />} />
                     <Route path="/results" element={<Results />} />
                     <Route path="/subscribe" element={<Subscribe />} />
+                    <Route path="/setup-compare" element={<SetupCompare />} />
                 </Routes>
                 <Footer />
             </ServerProvider>
