@@ -60,6 +60,104 @@ function compositeKey(entry) {
     return `${entry.section}||${entry.key}`;
 }
 
+// ── Category Groups ─────────────────────────────────────────
+// Sections that should be hidden from the diff view entirely
+const HIDDEN_SECTIONS = new Set(['CAR', '__EXT_PATCH', 'ABOUT']);
+
+// Ordered group definitions — each group has a label and a list of INI sections
+const SETUP_GROUPS = [
+    {
+        label: '⚙️ Gears',
+        sections: ['INTERNAL_GEAR_2', 'INTERNAL_GEAR_3', 'INTERNAL_GEAR_4', 'INTERNAL_GEAR_5',
+            'INTERNAL_GEAR_6', 'INTERNAL_GEAR_7', 'INTERNAL_GEAR_8', 'FINAL_RATIO'],
+    },
+    {
+        label: '🛞 Tyres',
+        sections: ['TYRES', 'PRESSURE_LF', 'PRESSURE_RF', 'PRESSURE_LR', 'PRESSURE_RR'],
+    },
+    {
+        label: '⛽ Fuel',
+        sections: ['FUEL', 'ENGINE_MAPS'],
+    },
+    {
+        label: '🌬️ Aerodynamics',
+        sections: ['WING_0', 'WING_1'],
+    },
+    {
+        label: '🛑 Brakes',
+        sections: ['FRONT_BIAS', 'BRAKE_POWER_MULT', 'CUSTOM_SCRIPT_ITEM_1', 'CUSTOM_SCRIPT_ITEM_2'],
+    },
+    {
+        label: '🔧 Drivetrain',
+        sections: ['CUSTOM_SCRIPT_ITEM_4', 'CUSTOM_SCRIPT_ITEM_5', 'CUSTOM_SCRIPT_ITEM_6',
+            'CUSTOM_SCRIPT_ITEM_7', 'DIFF_PRELOAD'],
+    },
+    {
+        label: '📐 Susp 1: Alignments',
+        sections: ['CAMBER_LF', 'CAMBER_RF', 'CAMBER_LR', 'CAMBER_RR',
+            'TOE_OUT_LF', 'TOE_OUT_RF', 'TOE_OUT_LR', 'TOE_OUT_RR'],
+    },
+    {
+        label: '🔩 Susp 2: Main',
+        sections: ['ARB_FRONT', 'ROD_LENGTH_LF', 'ROD_LENGTH_RF', 'ROD_LENGTH_LR', 'ROD_LENGTH_RR',
+            'SPRING_RATE_LF', 'SPRING_RATE_RF', 'SPRING_RATE_LR', 'SPRING_RATE_RR',
+            'PACKER_RANGE_LF', 'PACKER_RANGE_RF', 'PACKER_RANGE_LR', 'PACKER_RANGE_RR', 'ARB_REAR'],
+    },
+    {
+        label: '🔽 Susp 3: Dampers',
+        sections: ['DAMP_BUMP_LF', 'DAMP_BUMP_LR', 'DAMP_FAST_BUMP_LF', 'DAMP_FAST_BUMP_LR',
+            'DAMP_REBOUND_LF', 'DAMP_REBOUND_LR', 'DAMP_FAST_REBOUND_LF', 'DAMP_FAST_REBOUND_LR',
+            'DAMP_BUMP_RF', 'DAMP_BUMP_RR', 'DAMP_FAST_BUMP_RF', 'DAMP_FAST_BUMP_RR',
+            'DAMP_REBOUND_RF', 'DAMP_REBOUND_RR', 'DAMP_FAST_REBOUND_RF', 'DAMP_FAST_REBOUND_RR'],
+    },
+    {
+        label: '⬆️ Susp 4: Heave',
+        sections: ['SPRING_RATE_HF', 'PACKER_RANGE_HF', 'BUMPSTOP_HF',
+            'DAMP_BUMP_HF', 'DAMP_FAST_BUMP_HF', 'DAMP_REBOUND_HF', 'DAMP_FAST_REBOUND_HF',
+            'DAMP_BUMP_HR', 'DAMP_FAST_BUMP_HR', 'DAMP_REBOUND_HR', 'DAMP_FAST_REBOUND_HR',
+            'SPRING_RATE_HR', 'PACKER_RANGE_HR', 'BUMPSTOP_HR'],
+    },
+    {
+        label: '🎛️ Various',
+        sections: ['STEER_ASSIST'],
+    },
+    {
+        label: '📊 Visual: MFD',
+        sections: ['CUSTOM_SCRIPT_ITEM_3'],
+    },
+    {
+        label: '🎨 Visuals',
+        sections: ['WING_11', 'WING_12', 'WING_13'],
+    },
+];
+
+// Build a lookup: section name → group label
+const SECTION_TO_GROUP = new Map();
+for (const group of SETUP_GROUPS) {
+    for (const sec of group.sections) {
+        SECTION_TO_GROUP.set(sec, group.label);
+    }
+}
+
+// Organise diff rows into ordered groups, filtering hidden sections
+function groupDiffRows(rows) {
+    // Create a map of group label → rows (preserving group order)
+    const grouped = new Map();
+    for (const g of SETUP_GROUPS) {
+        grouped.set(g.label, []);
+    }
+    grouped.set('❓ Uncategorised', []);
+
+    for (const row of rows) {
+        if (HIDDEN_SECTIONS.has(row.section)) continue;
+        const groupLabel = SECTION_TO_GROUP.get(row.section) ?? '❓ Uncategorised';
+        grouped.get(groupLabel).push(row);
+    }
+
+    // Return only non-empty groups
+    return [...grouped.entries()].filter(([, rows]) => rows.length > 0);
+}
+
 // ── Component ───────────────────────────────────────────────
 export default function SetupCompare() {
     const [currentFile, setCurrentFile] = useState(null); // { name, entries }
@@ -119,7 +217,6 @@ export default function SetupCompare() {
             if (!prev) return prev;
             const copy = { ...prev, entries: prev.entries.map((e) => ({ ...e })) };
             if (direction === 'toCurrent') {
-                // Find value from diffRows
                 const row = diffRows.find((r) => r.compositeKey === ck);
                 if (!row) return prev;
                 const idx = copy.entries.findIndex((e) => compositeKey(e) === ck);
@@ -174,8 +271,13 @@ export default function SetupCompare() {
         URL.revokeObjectURL(url);
     }, [currentFile, targetFile]);
 
-    const diffCount = diffRows ? diffRows.filter((r) => !r.same).length : 0;
-    const sameCount = diffRows ? diffRows.filter((r) => r.same).length : 0;
+    // Compute visible rows (excluding hidden sections) for summary counts
+    const visibleRows = diffRows
+        ? diffRows.filter((r) => !HIDDEN_SECTIONS.has(r.section))
+        : null;
+    const diffCount = visibleRows ? visibleRows.filter((r) => !r.same).length : 0;
+    const sameCount = visibleRows ? visibleRows.filter((r) => r.same).length : 0;
+    const groups = diffRows ? groupDiffRows(diffRows) : null;
 
     return (
         <div className="setup-compare">
@@ -266,52 +368,63 @@ export default function SetupCompare() {
                     </div>
                 )}
 
-                {/* Diff Table */}
-                {diffRows && (
-                    <div className="diff-section">
-                        <div className="diff-header">
-                            <span>Key</span>
-                            <span style={{ textAlign: 'center' }}>Current</span>
-                            <span style={{ textAlign: 'center' }}></span>
-                            <span style={{ textAlign: 'center' }}>Target</span>
-                        </div>
-                        <div className="diff-list">
-                            {diffRows.map((row) => (
-                                <div
-                                    key={row.compositeKey}
-                                    className={`diff-row ${row.same ? 'same' : 'different'}`}
-                                >
-                                    <div className="diff-key">
-                                        <span className="diff-section-name">[{row.section}]</span>
-                                        {row.key}
-                                    </div>
-                                    <div className="diff-value">{row.currentValue}</div>
-                                    <div className="diff-arrows">
-                                        {!row.same && row.existsInCurrent && row.existsInTarget ? (
-                                            <>
-                                                <button
-                                                    className="arrow-btn"
-                                                    title="Copy Target → Current"
-                                                    onClick={() => handleCopy(row.compositeKey, 'toCurrent')}
-                                                >
-                                                    ←
-                                                </button>
-                                                <button
-                                                    className="arrow-btn"
-                                                    title="Copy Current → Target"
-                                                    onClick={() => handleCopy(row.compositeKey, 'toTarget')}
-                                                >
-                                                    →
-                                                </button>
-                                            </>
-                                        ) : null}
-                                    </div>
-                                    <div className="diff-value">{row.targetValue}</div>
+                {/* Grouped Diff Sections */}
+                {groups && groups.map(([groupLabel, rows]) => {
+                    const groupDiffCount = rows.filter((r) => !r.same).length;
+                    return (
+                        <div key={groupLabel} className="diff-group animate-in">
+                            <div className="diff-group-header">
+                                <h3 className="diff-group-title">{groupLabel}</h3>
+                                {groupDiffCount > 0 && (
+                                    <span className="diff-group-badge">{groupDiffCount} diff</span>
+                                )}
+                            </div>
+                            <div className="diff-section">
+                                <div className="diff-header">
+                                    <span>Key</span>
+                                    <span style={{ textAlign: 'center' }}>Current</span>
+                                    <span style={{ textAlign: 'center' }}></span>
+                                    <span style={{ textAlign: 'center' }}>Target</span>
                                 </div>
-                            ))}
+                                <div className="diff-list">
+                                    {rows.map((row) => (
+                                        <div
+                                            key={row.compositeKey}
+                                            className={`diff-row ${row.same ? 'same' : 'different'}`}
+                                        >
+                                            <div className="diff-key">
+                                                <span className="diff-section-name">[{row.section}]</span>
+                                                {row.key}
+                                            </div>
+                                            <div className="diff-value">{row.currentValue}</div>
+                                            <div className="diff-arrows">
+                                                {!row.same && row.existsInCurrent && row.existsInTarget ? (
+                                                    <>
+                                                        <button
+                                                            className="arrow-btn"
+                                                            title="Copy Target → Current"
+                                                            onClick={() => handleCopy(row.compositeKey, 'toCurrent')}
+                                                        >
+                                                            ←
+                                                        </button>
+                                                        <button
+                                                            className="arrow-btn"
+                                                            title="Copy Current → Target"
+                                                            onClick={() => handleCopy(row.compositeKey, 'toTarget')}
+                                                        >
+                                                            →
+                                                        </button>
+                                                    </>
+                                                ) : null}
+                                            </div>
+                                            <div className="diff-value">{row.targetValue}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    );
+                })}
             </div>
         </div>
     );
